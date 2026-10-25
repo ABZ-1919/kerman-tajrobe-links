@@ -1,3 +1,4 @@
+import { asset } from '@/lib/asset';
 import type { Platform } from '@/lib/contact';
 
 /**
@@ -77,7 +78,7 @@ const ICONS: Record<Platform, IconDef> = {
 };
 
 const IMAGE_ICONS: Partial<Record<Platform, string>> = {
-    rubika: '/rubika.png',
+    rubika: asset('/rubika.png'),
 };
 
 export function PlatformIcon({ platform, className }: { platform: Platform; className?: string }) {

@@ -1,3 +1,4 @@
+import { asset } from '@/lib/asset';
 import type { Metadata, Viewport } from 'next';
 import { bodyFont, displayFont } from '@/font';
 import './globals.css';
@@ -6,7 +7,7 @@ import './globals.css';
 export const metadata: Metadata = {
   title: 'کرمان تجربه | راه‌های ارتباطی',
   description: 'تلگرام، اینستاگرام، واتساپ، روبیکا، بله و شماره تماس کرمان تجربه',
-  icons: { icon: '/logo.svg' },
+  icons: { icon: asset('/logo.svg') },
 };
 
 export const viewport: Viewport = {
