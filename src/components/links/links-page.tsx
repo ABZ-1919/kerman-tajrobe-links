@@ -7,16 +7,16 @@ import { StaticLogo } from '@/components/logo/static-logo';
 import { LinkCard } from './link-card';
 import { TopProgress } from './top-progress';
 
-/** مدت پر شدن نوار نارنجی قبل از رفتن به لینک (ثانیه) */
+/** How long the orange bar takes to fill before navigating (seconds). */
 const NAV_DELAY = 0.45;
 
 export function LinksPage({ links }: { links: ResolvedLink[] }) {
   const reduceMotion = useReducedMotion();
-  /** کلید کارتی که کاربر رویش زده (برای نمایش افکت فعال و نوار بالا) */
+  /** Key of the card the user tapped (drives its active state and the top bar). */
   const [activeKey, setActiveKey] = useState<string | null>(null);
   const timers = useRef<number[]>([]);
 
-  // برگشت با دکمه‌ی Back: مرورگر صفحه را از bfcache برمی‌گرداند → نوار باید ریست شود
+  // Coming back with the Back button restores the page from bfcache, so reset the bar.
   useEffect(() => {
     const onPageShow = () => setActiveKey(null);
     window.addEventListener('pageshow', onPageShow);
@@ -33,10 +33,10 @@ export function LinksPage({ links }: { links: ResolvedLink[] }) {
     const delay = reduceMotion ? 0 : NAV_DELAY * 1000;
     timers.current.push(
       window.setTimeout(() => {
-        // همان تب: window.open بعد از تأخیر توسط مرورگر به‌عنوان پاپ‌آپ بلاک می‌شود.
-        // روی موبایل این لینک‌ها مستقیم اپ مربوطه را باز می‌کنند.
+        // Same tab on purpose: window.open after a delay gets blocked as a popup.
+        // On phones these links open the corresponding app directly.
         window.location.href = link.href;
-        // برای tel: صفحه عوض نمی‌شود → نوار را بعد از کمی برگردان
+        // tel: links don't leave the page, so reset the bar after a moment.
         timers.current.push(window.setTimeout(() => setActiveKey(null), 1200));
       }, delay),
     );
@@ -53,11 +53,11 @@ export function LinksPage({ links }: { links: ResolvedLink[] }) {
         animate={{ scale: 1, rotate: 0 }}
         transition={{ delay: 0.45, type: 'spring', stiffness: 260, damping: 16 }}
       >
-        {/* سایه با box-shadow ثابت روی دایره (نه filter: drop-shadow که با هر اسکرول دوباره محاسبه می‌شود) */}
+        {/* Static box-shadow on the circle (not filter: drop-shadow, which is recomputed while scrolling). */}
         <StaticLogo className="size-20 rounded-full shadow-[0_10px_24px_-6px_rgba(249,113,26,0.45)] sm:size-24" />
       </motion.div>
 
-      {/* تیتر با افکت pop (spring با damping کم) */}
+      {/* Headline with a pop effect (low-damping spring). */}
       <motion.h1
         className="mt-7 text-balance text-center font-display text-3xl leading-[1.6] text-ink sm:text-5xl"
         initial={{ opacity: 0, scale: 0.6, y: 12 }}
@@ -78,15 +78,15 @@ export function LinksPage({ links }: { links: ResolvedLink[] }) {
         {SITE.subline}
       </motion.p>
 
-      {/* موبایل: زیر هم — تبلت: دو ستون — دسکتاپ: سه ستون کنار هم */}
+      {/* Mobile: stacked · Tablet: two columns · Desktop: three columns side by side */}
       <motion.ul
         className="mt-10 grid w-full grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3"
         initial="hidden"
         animate="show"
         variants={{ show: { transition: { delayChildren: 1.1, staggerChildren: 0.09 } } }}
       >
-        {links.map((link) => (
-          <LinkCard key={keyOf(link)} link={link} active={activeKey === keyOf(link)} onNavigate={navigate} />
+        {links.map((link, i) => (
+          <LinkCard key={keyOf(link)} link={link} index={i} active={activeKey === keyOf(link)} onNavigate={navigate} />
         ))}
       </motion.ul>
 
@@ -104,7 +104,7 @@ export function LinksPage({ links }: { links: ResolvedLink[] }) {
 
 const keyOf = (link: ResolvedLink) => link.platform + link.value;
 
-/** تیتر را دور کلمه‌ی تأکیدی می‌شکند تا آن کلمه رنگ برند بگیرد */
+/** Splits the headline around the accent word so it can be rendered in the brand colour. */
 function splitAccent(text: string, accent: string): [string, string | null] {
   const i = text.indexOf(accent);
   if (i === -1) return [text, null];

@@ -1,11 +1,19 @@
 @import 'tailwindcss';
 
+/* Brand tokens: each value is defined once and reused everywhere. */
 @theme {
   --color-brand: #f9711a;
   --color-brand-soft: #fff4ec;
   --color-ink: #15204c;
-  --font-sans: 'Vazirmatn Variable', system-ui, sans-serif;
-  --font-display: 'Lalezar', 'Vazirmatn Variable', system-ui, sans-serif;
+}
+
+/*
+ * Font tokens point to the CSS variables that next/font injects on <html> (see src/font.ts).
+ * `inline` makes Tailwind emit var() as-is instead of trying to resolve it at build time.
+ */
+@theme inline {
+  --font-sans: var(--font-abar), system-ui, sans-serif;
+  --font-display: var(--font-hasti), var(--font-abar), system-ui, sans-serif;
 }
 
 html,
@@ -20,7 +28,30 @@ body {
   -webkit-tap-highlight-color: transparent;
   overscroll-behavior: none;
 }
-@theme inline {
-  --font-sans: var(--font-abar), system-ui, sans-serif;
-  --font-display: var(--font-hasti), var(--font-abar), system-ui, sans-serif;
+
+/*
+ * Touch devices have no hover, so each icon does one playful tilt right after
+ * the cards land, hinting that the cards are interactive.
+ */
+@keyframes icon-nudge {
+  0%,
+  100% {
+    transform: rotate(0) scale(1);
+  }
+  45% {
+    transform: rotate(-12deg) scale(1.06);
+  }
+}
+
+@media (hover: none) {
+  .icon-nudge {
+    animation: icon-nudge 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+    animation-delay: calc(1.9s + var(--nudge-index, 0) * 0.12s);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .icon-nudge {
+    animation: none;
+  }
 }

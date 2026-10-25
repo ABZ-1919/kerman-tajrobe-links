@@ -1,6 +1,6 @@
 import { LOGO_COLORS, LOGO_PIECES, LOGO_VIEWBOX } from './logo-paths';
 
-/** نسخه‌ی ثابت لوگو — در هدر صفحه‌ی لینک‌ها و در حالت reduced-motion */
+/** Static logo, used in the links page header and for reduced-motion users. */
 export function StaticLogo({ className, withCircle = true }: { className?: string; withCircle?: boolean }) {
   const r = LOGO_VIEWBOX / 2;
   return (

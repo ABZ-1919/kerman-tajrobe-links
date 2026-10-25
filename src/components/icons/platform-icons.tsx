@@ -2,14 +2,14 @@ import { asset } from '@/lib/asset';
 import type { Platform } from '@/lib/contact';
 
 /**
- * آیکن‌های پلتفرم‌ها به‌صورت SVG درون‌خطی (inline):
- * صفر درخواست شبکه، رنگ‌پذیر با currentColor، و قابل انیمیشن (کج شدن در هاور).
+ * Platform icons as inline SVG:
+ * zero extra network requests, colourable via currentColor, and animatable (tilt on hover).
  *
- * ✏️ برای عوض کردن یک آیکن: viewBox و محتوای داخل <svg> فایل جدید را
- * در آیتم همان پلتفرم جایگزین کنید (fill ها را حذف کنید تا رنگ از currentColor بیاید).
+ * ✏️ To replace an icon: copy the new file's viewBox and the contents of its <svg>
+ * into that platform's entry (remove `fill` attributes so the colour comes from currentColor).
  */
 
-/** رنگ شناخته‌شده‌ی هر پلتفرم — برای رنگ آیکن و پس‌زمینه‌ی کم‌رنگش */
+/** Each platform's recognisable colour, used for the icon and its tinted background. */
 export const PLATFORM_COLOR: Record<Platform, string> = {
   instagram: '#E1306C',
   telegram: '#229ED9',
@@ -49,7 +49,7 @@ const ICONS: Record<Platform, IconDef> = {
       <path d="M267.749,191.076c-14.595-11.729-27.983-17.431-40.93-17.431c-18.729,0-32.214,11.914-44.423,24.119 c-1.404,1.405-3.104,2.06-5.349,2.06c-10.288,0.001-28.387-12.883-53.794-38.293c-29.89-29.892-41.191-48.904-33.592-56.506 c20.6-20.593,27.031-41.237-4.509-80.462C73.861,10.51,62.814,3.68,51.38,3.68c-15.42,0-27.142,12.326-37.484,23.202 c-1.788,1.88-3.477,3.656-5.133,5.312c-11.689,11.688-11.683,37.182,0.017,68.2c12.837,34.033,38.183,71.055,71.37,104.247 c25.665,25.663,53.59,46.403,80.758,60.328c23.719,12.158,46.726,18.672,64.783,18.672c0.002,0,0.004,0,0.007,0 c11.3,0,20.479-2.465,26.541-7.478c12.314-10.181,35.234-29.039,35.081-51.439C287.236,212.71,280.653,201.451,267.749,191.076z" />
     ),
   },
-  // روبیکا: شش‌ضلعی با وجه‌های روشن‌وتیره و مکعب تیره در مرکز (بازسازی از روی آیکن رسمی)
+  // Rubika: hexagon with light/dark facets and a dark cube in the centre (redrawn from the official icon).
   rubika: {
     viewBox: '0 0 24 24',
     body: (

@@ -5,29 +5,29 @@ import { motion, useReducedMotion } from 'motion/react';
 import { LOGO_COLORS, LOGO_PIECES, LOGO_VIEWBOX } from '@/components/logo/logo-paths';
 import { StaticLogo } from '@/components/logo/static-logo';
 
-/** زمان‌بندی انیمیشن (ثانیه) — همه‌ی اعداد یک‌جا تا تنظیم ریتم آسان باشد */
+/** Animation timing in seconds, kept in one place so the rhythm is easy to tune. */
 const TIMING = {
-  start: 0.35, // مکث قبل از شروع
-  stagger: 0.2, // فاصله‌ی شروع هر تکه با تکه‌ی قبلی
-  lineGap: 0.15, // مکث اضافه قبل از شروع خط دوم («تجربه»)
-  draw: 0.75, // مدت کشیده شدن خط دور هر تکه
-  fill: 0.35, // مدت پر شدن رنگ
+  start: 0.35, // pause before the first stroke
+  stagger: 0.2, // delay between the start of consecutive pieces
+  lineGap: 0.15, // extra pause before the second line («تجربه»)
+  draw: 0.75, // how long each outline takes to draw
+  fill: 0.35, // how long the fill takes to appear
 };
 
 const easeDraw = [0.65, 0, 0.35, 1] as const;
 
 /**
- * لوگوی «کرمان تجربه» که مثل نوشتن با قلم ظاهر می‌شود.
- * هر تکه دو لایه دارد:
- *   ۱) خط دور (stroke) که با pathLength از ۰ تا ۱ «کشیده» می‌شود
- *   ۲) شکل پرشده با حاشیه‌ی سفید که بعد از کشیده شدن خط، با یک pop کوچک ظاهر می‌شود
- * ترتیب تکه‌ها راست‌به‌چپ است (logo-paths.ts) چون حروف فارسی متصل‌اند و
- * «حرف‌به‌حرف» در عمل یعنی «تکه‌به‌تکه» به ترتیب حرکت قلم.
+ * The «کرمان تجربه» logo, appearing as if written with a pen.
+ * Every piece has two layers:
+ *   1) an outline stroke that is "drawn" by animating pathLength from 0 to 1
+ *   2) the filled shape with its white outline, popping in once the stroke is drawn
+ * Pieces are ordered right-to-left (logo-paths.ts): Persian letters are connected,
+ * so "letter by letter" really means "connected piece by piece" in pen order.
  */
 export function AnimatedLogo({ className, onDone }: { className?: string; onDone?: () => void }) {
   const reduceMotion = useReducedMotion();
 
-  // اگر کاربر انیمیشن را در سیستم‌عامل کم کرده، لوگو را ثابت نشان بده
+  // Respect the OS-level "reduce motion" setting: show the static logo instead.
   useEffect(() => {
     if (reduceMotion) onDone?.();
   }, [reduceMotion, onDone]);
@@ -53,7 +53,7 @@ export function AnimatedLogo({ className, onDone }: { className?: string; onDone
         const delay = delayOf(i);
         return (
           <g key={piece.id}>
-            {/* لایه ۱: خط دور که کشیده می‌شود */}
+            {/* Layer 1: the outline being drawn */}
             <motion.path
               d={piece.d}
               fill="none"
@@ -68,7 +68,7 @@ export function AnimatedLogo({ className, onDone }: { className?: string; onDone
                 opacity: { delay, duration: 0.01 },
               }}
             />
-            {/* لایه ۲: پر شدن رنگ + حاشیه‌ی سفید (روی خط دور می‌نشیند و آن را می‌پوشاند) */}
+            {/* Layer 2: fill + white outline (sits on top of the stroke and covers it) */}
             <motion.path
               d={piece.d}
               fill={LOGO_COLORS.ink}

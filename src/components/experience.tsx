@@ -7,14 +7,14 @@ import { IntroScreen } from './intro/intro-screen';
 import { LinksPage } from './links/links-page';
 
 /**
- * ارکستراتور کل تجربه — یک state machine ساده با سه مرحله:
- *   intro      → اینترو نارنجی با لوگوی متحرک
- *   revealing  → لایه‌ی سفید (fixed) با دایره‌ای از پایین صفحه باز می‌شود
- *   done       → اینترو حذف می‌شود و clip-path و fixed از لایه‌ی سفید برداشته می‌شود
+ * Orchestrates the whole experience as a tiny state machine:
+ *   intro      → orange intro with the animated logo
+ *   revealing  → a fixed white layer opens with a circle growing from the bottom
+ *   done       → the intro unmounts and the white layer drops clip-path and `fixed`
  *
- * چرا مرحله‌ی done مهم است؟ اگر صفحه بعد از گذار هم داخل یک لایه‌ی fixed با clip-path
- * اسکرول شود، مرورگر موبایل با هر فریم اسکرول کل لایه را دوباره رسم می‌کند
- * (لگ، نوارهای سیاه و پارازیت). پس بعد از گذار، صفحه به جریان عادی سند برمی‌گردد.
+ * Why the `done` stage matters: if the page kept scrolling inside a fixed layer with a
+ * clip-path, mobile browsers would repaint the whole layer on every scroll frame
+ * (jank, black bars, visual noise). So after the reveal the page returns to normal flow.
  */
 type Stage = 'intro' | 'revealing' | 'done';
 
@@ -26,7 +26,7 @@ export function Experience({ links }: { links: ResolvedLink[] }) {
   const reduceMotion = useReducedMotion();
   const revealRef = useRef<HTMLDivElement>(null);
 
-  // انیمیشن دایره به‌صورت دستوری (imperative) تا بعد از اتمام، بدون باقی ماندن clip-path پاک شود
+  // Run the circle imperatively so the clip-path can be fully removed once it finishes.
   useEffect(() => {
     const el = revealRef.current;
     if (stage !== 'revealing' || !el) return;
@@ -39,7 +39,7 @@ export function Experience({ links }: { links: ResolvedLink[] }) {
     return () => controls.stop();
   }, [stage, reduceMotion]);
 
-  // بعد از ورود، پس‌زمینه و رنگ نوار مرورگر هم سفید شود
+  // After entering, make the body background and the browser toolbar colour white too.
   useEffect(() => {
     if (stage !== 'done') return;
     document.body.style.background = '#fff';
@@ -55,7 +55,7 @@ export function Experience({ links }: { links: ResolvedLink[] }) {
       {stage !== 'intro' && (
         <div
           ref={revealRef}
-          // حین گذار: لایه‌ی ثابت روی اینترو — بعد از گذار: صفحه‌ی معمولی با اسکرول خود مرورگر
+          // During the reveal: a fixed layer over the intro. Afterwards: a normal page using native scrolling.
           className={
             done ? 'flex min-h-dvh flex-col bg-white' : 'fixed inset-0 z-20 flex flex-col overflow-hidden bg-white'
           }

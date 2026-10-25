@@ -6,20 +6,20 @@ import { SITE } from '@/config/links';
 import { AnimatedLogo } from './animated-logo';
 
 type Props = {
-  /** true وقتی گذار به صفحه‌ی لینک‌ها شروع شده */
+  /** True once the transition to the links page has started. */
   leaving: boolean;
   onContinue: () => void;
 };
 
 /**
- * صفحه‌ی اینترو (پس‌زمینه‌ی نارنجی برند).
- * ورود به صفحه‌ی لینک‌ها با هر کدام از این‌ها:
- *   کشیدن رو به بالا (لمسی/ماوس) · تپ/کلیک · اسکرول رو به پایین · کلیدهای Enter / Space / ↑
- * کاربر مجبور نیست تا آخر انیمیشن صبر کند (هر لحظه می‌تواند رد شود).
+ * Intro screen on the orange brand background.
+ * The user can continue to the links page with any of:
+ *   swipe up (touch/mouse) · tap/click · scroll wheel · Enter / Space / ↑ keys
+ * There is no need to wait for the animation to finish; it can be skipped at any time.
  */
 /**
- * سه فلش کوچک روی هم که از پایین به بالا یکی‌یکی روشن و خاموش می‌شوند
- * (حس «حرکت رو به بالا» بدون جابه‌جایی واقعی).
+ * Three small stacked chevrons that light up one after another from bottom to top,
+ * suggesting upward motion without actually moving anything.
  */
 function SwipeChevrons() {
   return (
@@ -67,7 +67,7 @@ export function IntroScreen({ leaving, onContinue }: Props) {
     <motion.section
       aria-label="ورود به صفحه‌ی راه‌های ارتباطی کرمان تجربه"
       className="fixed inset-0 z-10 flex cursor-pointer touch-none select-none flex-col items-center justify-center overflow-hidden bg-brand"
-      // کشیدن رو به بالا: کل صفحه کمی همراه انگشت بالا می‌آید (حس فیزیکی)
+      // Swipe up: the whole screen follows the finger slightly for a physical feel.
       drag={leaving ? false : 'y'}
       dragConstraints={{ top: 0, bottom: 0 }}
       dragElastic={{ top: 0.4, bottom: 0.05 }}

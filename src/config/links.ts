@@ -1,19 +1,19 @@
 import { linkBuilders, type Platform } from '@/lib/contact';
 
 /**
- * ✏️ تنها فایلی که برای تغییر لینک‌ها لازم است ویرایش شود.
+ * ✏️ The only file you need to edit to change the links.
  *
- * - برای تغییر آیدی/شماره: فقط مقدار `value` را عوض کنید.
- * - برای حذف یک راه ارتباطی: آیتمش را پاک کنید.
- * - برای جابه‌جایی ترتیب نمایش: ترتیب آیتم‌ها را عوض کنید.
- * URL نهایی به‌صورت خودکار ساخته می‌شود (src/lib/contact.ts).
+ * - Change an ID or number: edit its `value` only.
+ * - Remove a channel: delete its item.
+ * - Reorder the list: reorder the items.
+ * Final URLs are built automatically (src/lib/contact.ts).
  */
 
 export type ContactLink = {
   platform: Platform;
-  /** عنوان نمایشی دکمه */
+  /** Label shown on the card */
   title: string;
-  /** آیدی (با یا بدون @) یا شماره تلفن */
+  /** Username (with or without @) or phone number */
   value: string;
 };
 
@@ -29,13 +29,13 @@ export const CONTACT_LINKS: ContactLink[] = [
 export const SITE = {
   name: 'کرمان تجربه',
   headline: 'آماده‌ی یه تجربه‌ی خفن توی کرمان هستی؟',
-  /** کلمه‌ای از تیتر که با رنگ برند نمایش داده می‌شود */
+  /** Word in the headline rendered in the brand colour */
   headlineAccent: 'کرمان',
   subline: 'با ما در ارتباط باشید',
   swipeHint: 'بالا بکشید',
 } as const;
 
-/** لینک نهایی + متن نمایشی (آیدی با @ یا شماره) — در کامپوننت‌ها از این استفاده می‌شود */
+/** Final URL + display text (@username or number); this is what the components consume. */
 export function resolveLink(link: ContactLink) {
   const isPhone = link.platform === 'phone' || link.platform === 'whatsapp';
   return {

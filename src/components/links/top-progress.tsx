@@ -2,7 +2,7 @@
 
 import { AnimatePresence, motion } from 'motion/react';
 
-/** نوار نارنجی بالای صفحه که قبل از رفتن به لینک پر می‌شود (از راست، چون صفحه RTL است) */
+/** Orange bar at the top of the page that fills before navigating (from the right, since the page is RTL). */
 export function TopProgress({ active, duration }: { active: boolean; duration: number }) {
   return (
     <AnimatePresence>

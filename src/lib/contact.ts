@@ -1,10 +1,10 @@
 /**
- * سازنده‌های لینک برای هر پلتفرم.
- * چرا؟ تا در فایل کانفیگ فقط «آیدی» یا «شماره» نوشته شود و
- * فرمت درست URL (مثلاً wa.me با کد کشور) یک‌جا و بدون تکرار ساخته شود.
+ * URL builders for each platform.
+ * Why: the config only stores a username or a phone number, and the correct
+ * URL format (e.g. wa.me with the country code) is built in one place.
  */
 
-/** 09013702037 → 989013702037 (فرمت بین‌المللی بدون + برای واتساپ) */
+/** 09013702037 → 989013702037 (international format without +, as WhatsApp expects) */
 export function toInternationalIR(phone: string): string {
   const digits = toLatinDigits(phone).replace(/\D/g, '');
   if (digits.startsWith('98')) return digits;
@@ -12,7 +12,7 @@ export function toInternationalIR(phone: string): string {
   return `98${digits}`;
 }
 
-/** تبدیل ارقام فارسی/عربی به لاتین تا ورودی کانفیگ هر شکلی بود خراب نشود */
+/** Converts Persian/Arabic digits to Latin so config input works in any form. */
 export function toLatinDigits(value: string): string {
   return value
     .replace(/[۰-۹]/g, (d) => String('۰۱۲۳۴۵۶۷۸۹'.indexOf(d)))

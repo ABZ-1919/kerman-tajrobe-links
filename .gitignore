@@ -6,5 +6,5 @@ next-env.d.ts
 .env*.local
 .DS_Store
 
-# تنظیم میرور محلی (مخصوص اینترنت ایران) — در ریپو نیاید
+# Local npm mirror settings (machine-specific), keep out of the repo
 .npmrc
