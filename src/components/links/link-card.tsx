@@ -4,62 +4,58 @@ import { motion, type Variants } from 'motion/react';
 import type { ResolvedLink } from '@/config/links';
 import { PLATFORM_COLOR, PlatformIcon } from '@/components/icons/platform-icons';
 
-/** ورود کارت‌ها (توسط والد با stagger یکی‌یکی اجرا می‌شود) */
+/** ورود کارت‌ها (توسط والد با stagger یکی‌یکی اجرا می‌شود) — فقط opacity و transform */
 export const cardEnter: Variants = {
-  hidden: { opacity: 0, y: 24, scale: 0.96 },
-  show: { opacity: 1, y: 0, scale: 1, transition: { type: 'spring', stiffness: 260, damping: 22 } },
+  hidden: { opacity: 0, y: 24 },
+  show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 260, damping: 24 } },
 };
-
-const SHADOW_REST = '0 1px 2px rgba(21,32,76,0.04), 0 0 0 1px rgba(21,32,76,0.07)';
-const SHADOW_HOVER = '0 14px 32px -14px rgba(249,113,26,0.45), 0 0 0 1px rgba(249,113,26,0.30)';
 
 type Props = {
   link: ResolvedLink;
+  /** کاربر روی همین کارت زده و در حال رفتن به لینک است */
+  active: boolean;
   onNavigate: (link: ResolvedLink) => void;
 };
 
-export function LinkCard({ link, onNavigate }: Props) {
+/**
+ * افکت‌های هاور با CSS ساده (نه JS) و فقط با transform و opacity:
+ *   - این دو ویژگی روی GPU انیمیت می‌شوند و باعث repaint نمی‌شوند (برخلاف box-shadow)
+ *   - hover در Tailwind v4 فقط روی دستگاه‌های دارای ماوس فعال است، پس روی موبایل
+ *     هنگام اسکرول کارت‌ها الکی «روشن» نمی‌شوند
+ *   - روی موبایل همان افکت با data-active هنگام تپ واقعی (کلیک) نمایش داده می‌شود
+ */
+export function LinkCard({ link, active, onNavigate }: Props) {
   const color = PLATFORM_COLOR[link.platform];
 
   return (
     <motion.li variants={cardEnter}>
-      <motion.a
+      <a
         href={link.href}
         target={link.external ? '_blank' : undefined}
         rel={link.external ? 'noopener noreferrer' : undefined}
         aria-label={`${link.title}: ${link.display}`}
+        data-active={active ? '' : undefined}
         onClick={(e) => {
           // Ctrl/Cmd/Shift/کلیک وسط → رفتار پیش‌فرض مرورگر (باز شدن در تب جدید) حفظ شود
           if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
           e.preventDefault();
           onNavigate(link);
         }}
-        className="group flex items-center gap-4 rounded-2xl bg-white p-4 outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
-        initial="rest"
-        animate="rest"
-        whileHover="hover"
-        whileFocus="hover"
-        whileTap="tap"
-        variants={{
-          rest: { y: 0, boxShadow: SHADOW_REST },
-          hover: { y: -3, boxShadow: SHADOW_HOVER },
-          tap: { y: 0, scale: 0.98, boxShadow: SHADOW_HOVER },
-        }}
-        transition={{ type: 'spring', stiffness: 400, damping: 28 }}
+        className="group relative flex items-center gap-4 rounded-2xl bg-white p-4 shadow-[0_1px_2px_rgba(21,32,76,0.04),0_0_0_1px_rgba(21,32,76,0.07)] outline-none transition-transform duration-300 ease-out select-none hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 data-active:-translate-y-0.5 [-webkit-tap-highlight-color:transparent]"
       >
-        {/* آیکن: با هاور/لمس کج می‌شود (variant از والد به ارث می‌رسد) */}
-        <motion.span
-          className="grid size-12 shrink-0 place-items-center rounded-xl"
+        {/* لایه‌ی سایه‌ی نارنجی: سایه ثابت است، فقط opacity آن تغییر می‌کند */}
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 shadow-[0_14px_32px_-14px_rgba(249,113,26,0.45),0_0_0_1px_rgba(249,113,26,0.35)] transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100 group-data-active:opacity-100"
+        />
+
+        {/* آیکن: کج شدن با منحنی فنری (overshoot) */}
+        <span
+          className="grid size-12 shrink-0 place-items-center rounded-xl transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:-rotate-12 group-hover:scale-105 group-data-active:-rotate-12 group-data-active:scale-105"
           style={{ color, backgroundColor: `${color}1A` }}
-          variants={{
-            rest: { rotate: 0, scale: 1 },
-            hover: { rotate: -12, scale: 1.06 },
-            tap: { rotate: -12, scale: 0.94 },
-          }}
-          transition={{ type: 'spring', stiffness: 420, damping: 12 }}
         >
           <PlatformIcon platform={link.platform} className="size-6" />
-        </motion.span>
+        </span>
 
         <span className="min-w-0 flex-1">
           <span className="block font-display text-lg leading-tight text-ink">{link.title}</span>
@@ -71,7 +67,7 @@ export function LinkCard({ link, onNavigate }: Props) {
 
         <svg
           viewBox="0 0 24 24"
-          className="size-5 shrink-0 text-ink/25 transition-colors group-hover:text-brand"
+          className="size-5 shrink-0 text-ink/25 transition-colors duration-300 group-hover:text-brand group-data-active:text-brand"
           fill="none"
           stroke="currentColor"
           strokeWidth={2.2}
@@ -81,7 +77,7 @@ export function LinkCard({ link, onNavigate }: Props) {
         >
           <path d="m14 6-6 6 6 6" />
         </svg>
-      </motion.a>
+      </a>
     </motion.li>
   );
 }
